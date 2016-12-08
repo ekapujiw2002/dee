@@ -18,6 +18,8 @@ Fitur
 * Menggunakan autoloader. Meminimalkan penggunaan `include` dan `require`.
 * `View templating`. Beberapa halaman dapat berbagi `layout` yang sama.
 * Koneksi database dengan PDO.
+* Register js dan css.
+* Asset bundle.
 * Clean url.
 * Support url rules/routing. Bisa untuk membangun aplikasi REST.
 * Aplikasi Console.
@@ -82,6 +84,46 @@ $this->title = 'Contoh JS';
 
 Untuk mengakses halaman yang kita buat, urlnya adalah `localhost/path/app/index.php/hello`
 
+Asset Package
+------------
+Meregister file js dapat dilakukan dengan mudah lewat `Asset Package`. Caranya, kita daftarkan paket kita di file config
+```php
+'components' => [
+    'views' => [
+        'packages' => [
+            'bootstrap' => [
+                'js' => ['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'],
+                'css' => ['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'],
+                'depends' => ['jquery'],
+            ],
+        ]
+    ]
+]
+```
+Setelah itu di view kita, kita bisa menggunakan paket tersebut dengan merigesternya
+```php
+/* @var $this \dee\base\View */
+
+$this->registerPackage('bootstrap');
+```
+Saat ini paket inti yang tersedia adalah `jquery` yang mengarah ke `//code.jquery.com/jquery-2.1.1.min.js`.
+Anda dapat menggunakan jquery anda sendiri dengan cara menimpah konfigursinya
+```php
+'components' => [
+    'views' => [
+        'packages' => [
+            ...
+            'jquery' => [
+                'js' => ['@web/main/jquery.min.js'],
+            ],
+        ]
+    ]
+]
+```
+Paket `jquery` akan otomatis tersedia ketika meregister javascript di `POS_READY` atau `POS_LOAD`. Atau Anda
+dapat meregister manual dengan memanggil dari view `$this->registerPackage('jquery')`.
+
+
 # Clean URL
 Untuk membuat url yang lebih bersih (menghilangkan `index.php`) lakukan beberapa langkah berikut.
 
@@ -143,7 +185,7 @@ public function actionTampil()
 ```
 
 Selain diakses langsung dari controller. Kita juga bisa membuat model untuk menangani input output database.
-Buat file `MUser.php` di folder `protected/models`.
+Buat file `User.php` di folder `protected/models`.
 ```php
 namespace app\models;
 
@@ -159,7 +201,7 @@ class User
     {
         $sql = 'insert into user(username,fullname) values (:username,:fullname)';
         return \Dee::$app->db->execute($sql,[
-            ':username' => $user['username], 
+            ':username' => $user['username'], 
             ':fullname' => $user['fullname'],
         ]);
     }

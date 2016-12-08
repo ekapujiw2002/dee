@@ -5,7 +5,7 @@ namespace dee\base;
 use Dee;
 
 /**
- * Description of DApp
+ * Description of Application
  *
  * @property View $view
  * @property Connection $db
@@ -58,6 +58,9 @@ class Application
         Dee::setAlias('@app', $this->basePath);
         foreach ($this->aliases as $alias => $path) {
             Dee::setAlias($alias, $path);
+        }
+        if (PHP_SAPI !== 'cli' && !isset(Dee::$aliases['@web'])) {
+            Dee::setAlias('@web', $this->request->getBaseUrl());
         }
     }
 
